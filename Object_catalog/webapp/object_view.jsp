@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Object View</title>
 <link rel="stylesheet" href="/foo/styles/main.css"/>
+<script src="/foo/scripts/main.js"></script>
 </head>
 <body>
 	<div class="main">
@@ -27,12 +28,21 @@
 				<% 
 					for (int i=0; i<objects.size(); i++) {
 						out.println("<tr><td>"+objects.get(i).getId()+"</td>");
-						out.println("<td>"+objects.get(i).getName()+"</td>");
+						out.println("<td><a href='/foo/values/object_value_view.jsp?objectId="+objects.get(i).getId()+"&objectName="+objects.get(i).getName()+"'>"+objects.get(i).getName()+"</a></td>");
 						out.println("<td>"+objects.get(i).getClassName()+"</td></tr>");
 					}
 				%>
 			</table>
 		</div>
+		<p>
+			<form name="addObject" method="get" action="/foo/objects/add_object.jsp">
+				<input id="objectName" type="text" name="objectName"/>
+				<select name="classId" id="classId">
+					<%=ViewObjectServlet.printClassesOptions(classes)%>
+				</select>
+				<input type="button" value="Add an Object" onclick="addObjectFormSubmit()"/>
+			</form>
+		</p>
 	</div>
 </body>
 </html>

@@ -42,7 +42,37 @@
   	
   	<servlet-mapping>
   		<servlet-name>objects</servlet-name>
-		<url-pattern>/objects/*</url-pattern>  	
+		<url-pattern>/objects/object_view.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>objectValues</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.ViewObjectValueServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>objectValues</servlet-name>
+		<url-pattern>/values/object_value_view.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>deleteObject</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.DeleteObjectServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>deleteObject</servlet-name>
+		<url-pattern>/objects/delete_object.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>addObject</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.AddObjectServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>addObject</servlet-name>
+		<url-pattern>/objects/add_object.jsp</url-pattern>  	
   	</servlet-mapping>
 
 </web-app>

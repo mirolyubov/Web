@@ -6,7 +6,7 @@ body {
 	margin:auto;
 }
 
-.data, .filter {
+.data, .filter, .panel_wrap {
 	border: 3px solid #0df;
 	border-radius:10px;
 	padding: 10px;
@@ -26,4 +26,8 @@ body {
 .data td{
 	background-color:#f0f0f0;
 	text-align:center;
+}
+
+#panel{
+	margin-bottom: 10px;
 }
