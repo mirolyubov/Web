@@ -1,0 +1,6 @@
+<Context docBase="@web.root@" path="/@deployment.tomcat.context@" reloadable="true" backgroundProcessorDelay="1" antiJARLocking="true" useNaming="true" allowLinking="true">
+  <Manager distributable="true" maxInactiveInterval="1800"/>
+  <Valve className="org.apache.catalina.valves.AccessLogValve" directory="@deployment.tomcat.logs.dir@" pattern="common" prefix="access-" suffix=".log" resolveHosts="false"/>
+  <Valve className="org.apache.catalina.authenticator.BasicAuthenticator" disableProxyCaching="false"/> 
+  <Valve className="org.apache.catalina.authenticator.NonLoginAuthenticator" disableProxyCaching="false"/> 
+</Context>

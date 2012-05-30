@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+
+<project name="Study web application server" basedir=".">
+	
+	<property name="name" value="foo" />
+	<property name="webinf.dir" value="${basedir}/webapp/WEB-INF" />
+	<property name="war.dir" value="${basedir}/../foowebapp-release/build" />
+	<property name="build.path" value="${basedir}/../foowebapp-release" />
+	
+	 <path id="build.classpath">
+	 	<fileset dir="${basedir}/webapp/WEB-INF/lib">
+	 		<include name="*.jar"/>
+	 	</fileset>
+	 </path>
+	 	
+	<target name="release" description="Build Release" depends="warfile">	        	
+	    <delete dir="${war.dir}" failonerror="no" />
+	    <delete dir="${build.path}/build" failonerror="no" />
+	</target>
+	
+	<target name="build" description="Build" depends="prepare">
+		<javac destdir="${war.dir}/WEB-INF/classes"
+	           debug="on"
+	           deprecation="off"
+			   optimize="off">
+			<src path="${basedir}/src"/>
+			<classpath refid="build.classpath" />
+	    </javac>
+	</target>
+
+	<target name="prepare">
+		<delete dir="${war.dir}" failonerror="no" />
+		<mkdir dir="${war.dir}/WEB-INF/classes" />
+		<mkdir dir="${war.dir}/WEB-INF/lib" />
+		<copy todir="${war.dir}" overwrite="yes">
+			<fileset dir="${basedir}/webapp"/>
+		</copy>
+		
+		<copy todir="${war.dir}/WEB-INF/classes/" overwrite="yes">
+			<fileset dir="${basedir}/src">
+	           <include name="**/*.properties" />
+	           <include name="**/*.xml" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="warfile" depends="build" description="Build the web application archive for ${config_name}">
+	    <mkdir dir="${build.path}/war"/>
+	    <war warfile="${build.path}/foo.war" basedir="${war.dir}" webxml="${war.dir}/WEB-INF/web.xml">
+	        <include name="*" />
+	        <include name="META-INF/*.*" />
+	        <include name="WEB-INF/*.*" />
+	        <include name="WEB-INF/lib/**" />
+	        <include name="WEB-INF/classes/**" />
+	        <include name="WEB-INF/conf/**" />
+	        <exclude name="**/.*" />
+	        <exclude name="**/.svn/**" />
+	    </war>
+	</target>
+	
+	<!--TOMCAT STARTUP OPTIONS-->
+    <property name="tomcat.image" location="${basedir}/server/apache-tomcat-6.0.35.zip"/>
+    <property name="tomcat.base" location="${build.path}/apache-tomcat-6.0.35"/>
+	<property name="deployment.tomcat.context" value="${name}"/>
+	<property name="deployment.tomcat.context.file" location="${basedir}/server/conf/dev/context.xml"/>
+	
+	<target name="tomcat.deploy">
+	  <delete dir="${tomcat.base}"/>
+	  <mkdir dir="${tomcat.base}"/>
+	  <unzip dest="${build.path}" src="${tomcat.image}"/>
+	  <property name="web.root" location="${war.dir}"/>
+	  <echo>Tomcat context looks in ${web.root}</echo>
+	  <copy overwrite="true" file="${deployment.tomcat.context.file}" tofile="${tomcat.base}/conf/Catalina/localhost/${deployment.tomcat.context}.xml">
+	    <filterset>
+	      <filter token="web.root" value="${web.root}"/>
+	      <filter token="deployment.tomcat.context" value="${deployment.tomcat.context}"/>
+	      <filter token="deployment.tomcat.logs.dir" value="${tomcat.base}/logs/${deployment.tomcat.context}"/>
+	    </filterset>
+	  </copy>
+    </target>
+	
+	<target name="tomcat.debug" depends="build">
+	    <delete dir="${tomcat.base}/logs" includes="**/*.*"/>
+	    <java jar="${tomcat.base}/bin/bootstrap.jar" fork="true">
+	        <jvmarg value="-Dcatalina.home=${tomcat.base}"/>
+	        <jvmarg value="-Dfile.encoding=UTF-8"/>
+	        <jvmarg value="-Xdebug"/>
+	        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1040"/>
+	    	<jvmarg value="-Dcom.sun.management.jmxremote"/>
+	    	<jvmarg value="-Dcom.sun.management.jmxremote.port=9999"/>
+	    	<jvmarg value="-Dcom.sun.management.jmxremote.ssl=false"/>
+	    	<jvmarg value="-Dcom.sun.management.jmxremote.authenticate=false"/>
+	     </java>
+    </target>
+
+    <target name="tomcat.stop">
+	  <java jar="${tomcat.base}/bin/bootstrap.jar" fork="true">
+	    <jvmarg value="-Dcatalina.home=${tomcat.base}"/>
+	    <arg line="stop"/>
+	  </java>
+    </target>
+	
+	<target name="clean">
+	    <delete dir="${build.path}/build"/>
+	</target>
+	
+</project>

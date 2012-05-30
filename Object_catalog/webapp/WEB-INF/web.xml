@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="foo_webapp" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+    <display-name>Some example web application</display-name>
+    <description>
+        Student example application
+    </description>
+
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>webapp.foo</param-value>
+    </context-param>
+    
+	<session-config>
+    	<session-timeout>10</session-timeout>
+  	</session-config>
+  	
+  	<servlet>
+  		<servlet-name>hi</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.student.HelloWorldServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>hi</servlet-name>
+		<url-pattern>/hello/*</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>person</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.student.PersonServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>person</servlet-name>
+		<url-pattern>/person/*</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>objects</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.ViewObjectServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>objects</servlet-name>
+		<url-pattern>/objects/*</url-pattern>  	
+  	</servlet-mapping>
+
+</web-app>
