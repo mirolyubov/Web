@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Class View</title>
+<title>Style View</title>
 <link rel="stylesheet" href="/foo/styles/main.css"/>
 <script src="/foo/scripts/main.js"></script>
 </head>
@@ -17,22 +17,29 @@
 			<input type="button" value="Styles" onclick="location.href='/foo/styles/style_view.jsp'">
 			<input type="button" value="Family" onclick="location.href='/foo/families/family_view.jsp'">
 		</div>
-		<h2>Class view</h2>
-		
-		<% ArrayList<TClass> classes = (ArrayList<TClass>)request.getAttribute("classes"); %>
+		<h2>Style view</h2>
 		
 		<div class="data">
 			<table>
-				<th>ID</th><th>Object Name</th><th>Description</th><th></th><th></th>
-				<%=ViewClassServlet.printClasses(classes) %>
+				<th>ID</th><th>Family</th><th>is Mandatory</th><th>is Multiple</th><th></th><th></th>
+				<%=ViewStyleServlet.printStyles() %>
 			</table>
 		</div>
 		<p>
-			<h3>Add a Class</h3>
-			<form name="addClass" method="get" action="/foo/classes/add_class.jsp">
-				Name: <input id="className" type="text" name="className"/>
-				Description: <input type="text" name="description" />
-				<input type="submit" value="Add a Class"/>
+			<h3>Add a Style</h3>
+			<form name="addStyle" method="get" action="/foo/styles/add_style.jsp">
+				Family: <select name="familyId">
+					<%=ViewStyleServlet.printFamilyOptions() %>
+				</select>
+				<select name="isMandatory">
+					<option selected="selected" value="f">is not mandatory</option>
+					<option value="t">is mandatory</option>
+				</select>
+				<select name="isMultiple">
+					<option selected="selected" value="f">is not multiple</option>
+					<option value="t">is multiple</option>
+				</select>
+				<input type="submit" value="Add a Style"/>
 			</form>
 		</p>
 	</div>
