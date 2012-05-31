@@ -22,10 +22,10 @@ public class ObjectCatalog {
 	private Connection getConnection() {
 		try {
 			Properties props = new Properties();
-			props.setProperty("user", "kite");
-			props.setProperty("password", "l0stman");
+			props.setProperty("user", "ilya");
+			props.setProperty("password", "ilya");
 			Connection con = DriverManager.getConnection(
-					"jdbc:postgresql://localhost/object_catalog", props);
+					"jdbc:postgresql://localhost/ilya", props);
 			return con;
 		} catch (SQLException e) {
 			throw new RuntimeException("cannot initialize connection", e);
@@ -95,6 +95,27 @@ public class ObjectCatalog {
 		return result;
 	}
 	
+	public ArrayList<TFamily> getFamilies() {
+		ArrayList<TFamily> result = new ArrayList<TFamily>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select family_id, name, description from t_family");
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				TFamily r = fetchFamily(rs);
+				result.add(r);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
 	public TClass getClassObject(String classId) {
 		TClass result = null;
 		PreparedStatement ps = null;
@@ -107,6 +128,27 @@ public class ObjectCatalog {
 			rs = ps.executeQuery();
 			rs.next(); 
 			result = fetchClass(rs);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
+	public TFamily getFamily(String familyId) {
+		TFamily result = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select family_id, name, description from t_family where family_id=?");
+			ps.setInt(1, Integer.valueOf(familyId));
+			rs = ps.executeQuery();
+			rs.next(); 
+			result = fetchFamily(rs);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -159,6 +201,27 @@ public class ObjectCatalog {
 		return result;
 	}
 	
+	public TStyle getStyle(String styleId) {
+		TStyle result = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select style_id, is_mandatory, is_multiple, name as family_name from t_style, t_family where t_style.family_id=t_family.family_id and style_id=?"); 
+			ps.setInt(1, Integer.valueOf(styleId));
+			rs = ps.executeQuery();
+			rs.next(); 
+			result = fetchStyle(rs);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
 	public ArrayList<TStyle> getStyles() {
 		ArrayList<TStyle> result = new ArrayList<TStyle>();
 		PreparedStatement ps = null;
@@ -168,6 +231,28 @@ public class ObjectCatalog {
 			con  = getConnection();
 			ps = con.prepareStatement("select style_id, is_mandatory, is_multiple, name as family_name from t_style, t_family where t_style.family_id=t_family.family_id"); 
 			//ps.setInt(1, Integer.valueOf(objectId));
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				TStyle r = fetchStyle(rs);
+				result.add(r);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
+	public ArrayList<TStyle> getStylesForFamily(String familyId) {
+		ArrayList<TStyle> result = new ArrayList<TStyle>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select style_id, is_mandatory, is_multiple, name as family_name from t_style, t_family where t_style.family_id=t_family.family_id and t_style.family_id=?"); 
+			ps.setInt(1, Integer.valueOf(familyId));
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				TStyle r = fetchStyle(rs);
@@ -249,6 +334,14 @@ public class ObjectCatalog {
 		return c;
 	}
 	
+	private TFamily fetchFamily(ResultSet rs) throws SQLException {
+		int familyId = rs.getInt("family_id");
+		String name = rs.getString("name");
+		String description = rs.getString("description");
+		TFamily f = new TFamily(familyId, name, description);
+		return f;
+	}
+	
 	private TObjectValue fetchObjectValue(ResultSet rs) throws SQLException {
 		int valueId = rs.getInt("object_value_id");
 		String value = rs.getString("value");
@@ -287,6 +380,31 @@ public class ObjectCatalog {
 			con  = getConnection();
 			ps = con.prepareStatement("delete from t_class where class_id=?");
 			ps.setInt(1, Integer.valueOf(classId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void deleteFamily(String familyId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		
+		
+		//// Deleting t_style and etc
+		ArrayList<TStyle> styleLinks = getStylesForFamily(familyId);
+		for (int i=0; i<styleLinks.size(); i++) {
+			deleteStyle(Integer.toString(styleLinks.get(i).getStyleId()));
+		}
+		
+		//// Deleting style
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_family where family_id=?");
+			ps.setInt(1, Integer.valueOf(familyId));
 			ps.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -355,6 +473,44 @@ public class ObjectCatalog {
 		}
 	}
 	
+	public void deleteStyle(String styleId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_class_style where style_id=?");
+			ps.setInt(1, Integer.valueOf(styleId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_object_value where style_id=?");
+			ps.setInt(1, Integer.valueOf(styleId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_style where style_id=?");
+			ps.setInt(1, Integer.valueOf(styleId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
 	public void editClass(String classId, String className, String description){
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -366,6 +522,25 @@ public class ObjectCatalog {
 			ps.setString(1, className);
 			ps.setString(2, description);
 			ps.setInt(3, Integer.valueOf(classId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void editFamily(String familyId, String familyName, String description){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("update t_family set (name, description) = (?, ?) where family_id=?");
+			// update t_class set (name, description) = ('myclass1', 'mydesc1') where class_id=4
+			ps.setString(1, familyName);
+			ps.setString(2, description);
+			ps.setInt(3, Integer.valueOf(familyId));
 			ps.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -414,6 +589,36 @@ public class ObjectCatalog {
 			con  = getConnection();
 			ps = con.prepareStatement("insert into t_class (class_id, name, description) values ('"+(lastId+1)+"', ?, ?)");
 			ps.setString(1, className);
+			ps.setString(2, description);
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void addFamily(String familyName, String description){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		int lastId = 0;
+		try {					// Get last index
+			con  = getConnection();
+			ps = con.prepareStatement("select family_id from t_family order by family_id desc limit 1 offset 0");
+			rs = ps.executeQuery();
+			rs.next();
+			lastId = rs.getInt("family_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("insert into t_family (family_id, name, description) values ('"+(lastId+1)+"', ?, ?)");
+			ps.setString(1, familyName);
 			ps.setString(2, description);
 			ps.executeQuery();
 		} catch (SQLException e) {
@@ -494,6 +699,54 @@ public class ObjectCatalog {
 			ps.setInt(1, Integer.valueOf(objectId));
 			ps.setInt(2, Integer.valueOf(styleId));
 			ps.setString(3, value);
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void addStyle(String familyId, String isMandatory, String isMultiple){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		int lastId = 0;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select style_id from t_style order by style_id desc limit 1 offset 0");
+			rs = ps.executeQuery();
+			rs.next();
+			lastId = rs.getInt("style_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("insert into t_style (style_id, family_id, is_mandatory, is_multiple) values ('"+(lastId+1)+"', ?, '"+isMandatory+"', '"+isMultiple+"')");
+			//insert into t_style (style_id, family_id, is_mandatory, is_multiple) values ('55', '2', 'f', 'f')
+			ps.setInt(1, Integer.valueOf(familyId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void editStyle(String styleId, String familyId, String isMandatory, String isMultiple){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("update t_style set (family_id, is_mandatory, is_multiple) = (?, '"+isMandatory+"', '"+isMultiple+"') where style_id=?");
+			// update t_style set (family_id, is_mandatory, is_multiple) = ('1', 't', 'f') where style_id=15;
+			ps.setInt(1, Integer.valueOf(familyId));
+			ps.setInt(2, Integer.valueOf(styleId));
 			ps.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();

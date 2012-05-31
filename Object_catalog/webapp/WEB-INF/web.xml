@@ -174,5 +174,85 @@
   		<servlet-name>editClassStyle</servlet-name>
 		<url-pattern>/class_styles/edit_class_style.jsp</url-pattern>  	
   	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>viewStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.ViewStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>viewStyle</servlet-name>
+		<url-pattern>/styles/style_view.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>addStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.AddStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>addStyle</servlet-name>
+		<url-pattern>/styles/add_style.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>deleteStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.DeleteStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>deleteStyle</servlet-name>
+		<url-pattern>/styles/delete_style.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>editStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.EditStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>editStyle</servlet-name>
+		<url-pattern>/styles/edit_style.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>viewFamily</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.ViewFamilyServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>viewFamily</servlet-name>
+		<url-pattern>/families/family_view.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>addFamily</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.AddFamilyServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>addFamily</servlet-name>
+		<url-pattern>/families/add_family.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>deleteFamily</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.DeleteFamilyServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>deleteFamily</servlet-name>
+		<url-pattern>/families/delete_family.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>editFamily</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.EditFamilyServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>editFamily</servlet-name>
+		<url-pattern>/families/edit_family.jsp</url-pattern>  	
+  	</servlet-mapping>
 
 </web-app>
