@@ -11,6 +11,12 @@
 </head>
 <body>
 	<div class="main">
+		<div>
+			<input type="button" value="Objects" onclick="location.href='/foo/objects/object_view.jsp'">
+			<input type="button" value="Classes" onclick="location.href='/foo/classes/class_view.jsp'">
+			<input type="button" value="Styles" onclick="location.href='/foo/styles/style_view.jsp'">
+			<input type="button" value="Family" onclick="location.href='/foo/families/family_view.jsp'">
+		</div>
 		<h2>Object view</h2>
 		<div class="filter">
 		<% ArrayList<TClass> classes = (ArrayList<TClass>)request.getAttribute("classes"); %>
