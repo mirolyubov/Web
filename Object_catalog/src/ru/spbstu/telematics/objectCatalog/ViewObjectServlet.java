@@ -16,14 +16,16 @@ public class ViewObjectServlet extends HttpServlet{
 			throws ServletException, IOException {
 		String page = req.getParameter("page");
 		String classId = req.getParameter("classId");
+		String objectName = req.getParameter("objectName");
 		if (classId != null)
 			selectedClassId = Integer.valueOf(classId).intValue();
-		if (page == null)
-			page = "1";
-		ArrayList<TObject> objects = catalog.getObjects(classId);
+		//if (page == null)
+		//	page = "1";
+		ArrayList<TObject> objects = catalog.getObjects(classId, objectName);
 		ArrayList<TClass> classes = catalog.getClasses();
 		req.setAttribute("objects", objects);
 		req.setAttribute("classes", classes);
+		req.setAttribute("objectName", objectName);
 		req.getRequestDispatcher("/object_view.jsp").forward(req, resp);
 	}
 	

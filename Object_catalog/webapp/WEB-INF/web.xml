@@ -74,5 +74,105 @@
   		<servlet-name>addObject</servlet-name>
 		<url-pattern>/objects/add_object.jsp</url-pattern>  	
   	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>addValue</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.AddValueServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>addValue</servlet-name>
+		<url-pattern>/values/add_value.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>deleteValue</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.DeleteValueServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>deleteValue</servlet-name>
+		<url-pattern>/values/delete_value.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>viewClass</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.ViewClassServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>viewClass</servlet-name>
+		<url-pattern>/classes/class_view.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>deleteClass</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.DeleteClassServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>deleteClass</servlet-name>
+		<url-pattern>/classes/delete_class.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>addClass</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.AddClassServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>addClass</servlet-name>
+		<url-pattern>/classes/add_class.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>editClass</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.EditClassServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>editClass</servlet-name>
+		<url-pattern>/classes/edit_class.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>viewClassStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.ViewClassStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>viewClassStyle</servlet-name>
+		<url-pattern>/class_styles/class_style_view.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>addClassStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.AddClassStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>addClassStyle</servlet-name>
+		<url-pattern>/class_styles/add_class_style.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>deleteClassStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.DeleteClassStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>deleteClassStyle</servlet-name>
+		<url-pattern>/class_styles/delete_class_style.jsp</url-pattern>  	
+  	</servlet-mapping>
+  	
+  	<servlet>
+  		<servlet-name>editClassStyle</servlet-name>
+  		<servlet-class>ru.spbstu.telematics.objectCatalog.EditClassStyleServlet</servlet-class>
+  	</servlet>
+  	
+  	<servlet-mapping>
+  		<servlet-name>editClassStyle</servlet-name>
+		<url-pattern>/class_styles/edit_class_style.jsp</url-pattern>  	
+  	</servlet-mapping>
 
 </web-app>

@@ -12,29 +12,33 @@
 	<div class="main">
 		<h2>Object Value view</h2>
 		<% ArrayList<TObjectValue> values = (ArrayList<TObjectValue>)request.getAttribute("values"); %>
+		<% ArrayList<TStyle> styles = (ArrayList<TStyle>)request.getAttribute("styles"); 
+			String objectId = (String)request.getAttribute("objectId");	%>
 		<p><a href="/foo/objects/object_view.jsp">Back</a>&nbsp;Object name: ${objectName}</p>
 		<div class="data">
 			<table>
-				<th>Value</th><th>Is mandatory</th><th>Is multiple</th>
+				<th>Value</th><th>Is mandatory</th><th>Is multiple</th><th></th>
 				<%
 					for (int i=0; i<values.size(); i++) {
 						out.println("<tr><td>"+values.get(i).getValue()+"</td>");
 						out.println("<td>"+values.get(i).isMandatory()+"</td>");
-						out.println("<td>"+values.get(i).isMultiple()+"</td></tr>");
+						out.println("<td>"+values.get(i).isMultiple()+"</td>");
+	out.println("<td><input type='button' value='delete' onclick=\"location='/foo/values/delete_value.jsp?objectId="+objectId+"&valueId="+values.get(i).getId()+"'\"></td></tr>");
 					}
 				%>
 			</table>
 		</div>
 		<div class="panel_wrap">
-			<div id="panel">
 				<div>
-					<input type="text" name="value_1"/>
-						<select name="style_1">
+				<form name="addValue" method="get" action="/foo/values/add_value.jsp">
+					<input type="text" name="value"/>
+					<select name="styleId">
+						<%=ViewObjectValueServlet.printStylesOptions(styles)%>
 					</select>
+					<input type="hidden" name="objectId" value="${objectId}"/>
+					<input type="submit" value="Add Field" />
+				</form>
 				</div>
-			</div>
-			<input type="button" value="+1"/>
-			<input type="button" value="Add Fields"/>
 		</div>
 		<p><input type="button" value="Delete" onclick="location.href='/foo/objects/delete_object.jsp?objectId=${objectId}'"/></p>
 	</div>

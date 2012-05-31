@@ -15,12 +15,14 @@ public class ViewObjectValueServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String objectId = req.getParameter("objectId");
-		String objectName = req.getParameter("objectName");
 		if (objectId != null) {
 			ArrayList<TObjectValue> values = catalog.getObjectValues(objectId);
+			ArrayList<TStyle> styles = catalog.getStyles();
+			String objectName = catalog.getObjectName(objectId);
 			req.setAttribute("values", values);
 			req.setAttribute("objectId", objectId);
 			req.setAttribute("objectName", objectName);
+			req.setAttribute("styles", styles);
 			req.getRequestDispatcher("/object/object_value_view.jsp").forward(req, resp);
 		}
 	}

@@ -15,7 +15,8 @@
 		<div class="filter">
 		<% ArrayList<TClass> classes = (ArrayList<TClass>)request.getAttribute("classes"); %>
 			<form name="object_filter" method="get" action="object_view.jsp">
-				<select name="classId">
+				Name: <input type="text" name="objectName" value="${objectName}"/>
+				Class: <select name="classId">
 					<%=ViewObjectServlet.printClassesOptions(classes)%>
 				</select>
 				<input type="submit"/>
@@ -28,7 +29,7 @@
 				<% 
 					for (int i=0; i<objects.size(); i++) {
 						out.println("<tr><td>"+objects.get(i).getId()+"</td>");
-						out.println("<td><a href='/foo/values/object_value_view.jsp?objectId="+objects.get(i).getId()+"&objectName="+objects.get(i).getName()+"'>"+objects.get(i).getName()+"</a></td>");
+						out.println("<td><a href='/foo/values/object_value_view.jsp?objectId="+objects.get(i).getId()+"'>"+objects.get(i).getName()+"</a></td>");
 						out.println("<td>"+objects.get(i).getClassName()+"</td></tr>");
 					}
 				%>

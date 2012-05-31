@@ -32,16 +32,30 @@ public class ObjectCatalog {
 		}
 	}
 
-	public ArrayList<TObject> getObjects(String classId) {
+	public ArrayList<TObject> getObjects(String classId, String objectName) {
 		ArrayList<TObject> result = new ArrayList<TObject>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Connection con = null;
 		try {
 			con  = getConnection();
-			if (classId!=null && !classId.equals("0")) {
-				ps = con.prepareStatement("select object_id, object_name, name as class_name from t_object, t_class where t_object.class_id=t_class.class_id and t_object.class_id=?");
-				ps.setInt(1, Integer.valueOf(classId));
+			if ((classId!=null && !classId.equals("0")) || (objectName!=null && !objectName.equals(""))) {
+				if (classId!=null && !classId.equals("0") && objectName!=null && !objectName.equals("")) {
+					ps = con.prepareStatement("select object_id, object_name, name as class_name from t_object, t_class where t_object.class_id=t_class.class_id and t_object.class_id=? and object_name=?");
+					ps.setInt(1, Integer.valueOf(classId));
+					ps.setString(2, objectName);
+				}
+				else {
+					if (classId!=null && !classId.equals("0")) {
+						ps = con.prepareStatement("select object_id, object_name, name as class_name from t_object, t_class where t_object.class_id=t_class.class_id and t_object.class_id=?");
+						ps.setInt(1, Integer.valueOf(classId));
+					}
+					else 
+						if (objectName!=null && !objectName.equals("")) {
+							ps = con.prepareStatement("select object_id, object_name, name as class_name from t_object, t_class where t_object.class_id=t_class.class_id and object_name=?");
+							ps.setString(1, objectName);
+						}
+				}
 			}
 			else
 				ps = con.prepareStatement("select object_id, object_name, name as class_name from t_object, t_class where t_object.class_id=t_class.class_id"); 
@@ -73,6 +87,27 @@ public class ObjectCatalog {
 				TClass r = fetchClass(rs);
 				result.add(r);
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
+	public TClass getClassObject(String classId) {
+		TClass result = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select class_id, name, description from t_class where class_id=?");
+			ps.setInt(1, Integer.valueOf(classId));
+			rs = ps.executeQuery();
+			rs.next(); 
+			result = fetchClass(rs);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -146,6 +181,49 @@ public class ObjectCatalog {
 		return result;
 	}
 	
+	public ArrayList<TStyle> getStyles(String classId) {
+		ArrayList<TStyle> result = new ArrayList<TStyle>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select t_style.style_id, is_mandatory, is_multiple, name as family_name from t_style, t_family, t_class_style where t_style.family_id=t_family.family_id and t_class_style.style_id=t_style.style_id and class_id=?"); 
+			ps.setInt(1, Integer.valueOf(classId));
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				TStyle r = fetchStyle(rs);
+				result.add(r);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
+	public String getObjectName(String objectId) {
+		String result = new String();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select object_name from t_object where object_id=?");
+			ps.setInt(1, Integer.valueOf(objectId));
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				result = rs.getString("object_name");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		return result;
+	}
+	
 	private TObject fetchObject(ResultSet rs) throws SQLException {
 		int objId = rs.getInt("object_id");
 		String objName = rs.getString("object_name");
@@ -181,6 +259,42 @@ public class ObjectCatalog {
 		return v;
 	}
 	
+	public void deleteClass(String classId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		
+		//// Deleting t_class_style links
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_class_style where class_id=?");
+			ps.setInt(1, Integer.valueOf(classId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		//// Deleting t_object and t_object_values links
+		ArrayList<TObject> objectLinks = getObjects(classId, null);
+		for (int i=0; i<objectLinks.size(); i++) {
+			deleteObject(Integer.toString(objectLinks.get(i).getId()));
+		}
+		
+		//// Deleting class
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_class where class_id=?");
+			ps.setInt(1, Integer.valueOf(classId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
 	public void deleteObject(String objectId){
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -200,6 +314,125 @@ public class ObjectCatalog {
 			con  = getConnection();
 			ps = con.prepareStatement("delete from t_object where object_id=?");
 			ps.setInt(1, Integer.valueOf(objectId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void deleteValue(String valueId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_object_value where object_value_id=?");
+			ps.setInt(1, Integer.valueOf(valueId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void deleteClassStyle(String classId, String styleId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("delete from t_class_style where class_id=? and style_id=?");
+			ps.setInt(1, Integer.valueOf(classId));
+			ps.setInt(2, Integer.valueOf(styleId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void editClass(String classId, String className, String description){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("update t_class set (name, description) = (?, ?) where class_id=?");
+			// update t_class set (name, description) = ('myclass1', 'mydesc1') where class_id=4
+			ps.setString(1, className);
+			ps.setString(2, description);
+			ps.setInt(3, Integer.valueOf(classId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void editClassStyle(String classId, String styleId, String newStyleId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("update t_class_style set style_id=?  where class_id=? and style_id=?");
+			// update t_class_style set style_id = 3 where class_id=4 and style_id=4
+			ps.setInt(1, Integer.valueOf(newStyleId));
+			ps.setInt(2, Integer.valueOf(classId));
+			ps.setInt(3, Integer.valueOf(styleId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void addClass(String className, String description){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		int lastId = 0;
+		try {					// Get last index
+			con  = getConnection();
+			ps = con.prepareStatement("select class_id from t_class order by class_id desc limit 1 offset 0");
+			rs = ps.executeQuery();
+			rs.next();
+			lastId = rs.getInt("class_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("insert into t_class (class_id, name, description) values ('"+(lastId+1)+"', ?, ?)");
+			ps.setString(1, className);
+			ps.setString(2, description);
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void addClassStyle(String classId, String styleId){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("insert into t_class_style (class_id, style_id) values (?, ?)");
+			ps.setInt(1, Integer.valueOf(classId));
+			ps.setInt(2, Integer.valueOf(styleId));
 			ps.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -230,6 +463,37 @@ public class ObjectCatalog {
 			ps = con.prepareStatement("insert into t_object (object_id, object_name, class_id) values ('"+(lastId+1)+"', ?, ?)");
 			ps.setString(1, objectName);
 			ps.setInt(2, Integer.valueOf(classId));
+			ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+	}
+	
+	public void addValue(String objectId, String styleId, String value){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Connection con = null;
+		int lastId = 0;
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("select object_value_id from t_object_value order by object_value_id desc limit 1 offset 0");
+			rs = ps.executeQuery();
+			rs.next();
+			lastId = rs.getInt("object_value_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			clean(ps, rs, con);
+		}
+		
+		try {
+			con  = getConnection();
+			ps = con.prepareStatement("insert into t_object_value (object_value_id, object_id, style_id, value) values ('"+(lastId+1)+"', ?, ?, ?)");
+			ps.setInt(1, Integer.valueOf(objectId));
+			ps.setInt(2, Integer.valueOf(styleId));
+			ps.setString(3, value);
 			ps.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
