@@ -22,10 +22,10 @@ public class ObjectCatalog {
 	private Connection getConnection() {
 		try {
 			Properties props = new Properties();
-			props.setProperty("user", "kite");
-			props.setProperty("password", "l0stman");
+			props.setProperty("user", "ilya");
+			props.setProperty("password", "ilya");
 			Connection con = DriverManager.getConnection(
-					"jdbc:postgresql://localhost/object_catalog", props);
+					"jdbc:postgresql://localhost/ilya", props);
 			return con;
 		} catch (SQLException e) {
 			throw new RuntimeException("cannot initialize connection", e);
